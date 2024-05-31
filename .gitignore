@@ -1,2 +1,5 @@
 data/*
 venv/*
+transformed/*
+archived/*
+**/__pycache__/*
