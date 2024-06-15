@@ -2,7 +2,7 @@ from typing import List
 
 import pandas as pd
 
-from etl.etl_config import (
+from etl_config import (
     DATA_PATH,
     TRANS_PATH,
     POSITIONS, 

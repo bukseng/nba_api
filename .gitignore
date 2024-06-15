@@ -3,3 +3,5 @@ venv/*
 transformed/*
 archived/*
 **/__pycache__/*
+test.py
+sample.csv

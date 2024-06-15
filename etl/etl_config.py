@@ -1,6 +1,6 @@
 DATA_PATH = 'data/'
 TRANS_PATH = 'transformed/'
-YEAR_RANGE = range(1947, 2024)
+YEAR_RANGE = range(2024, 2025)
 POSITIONS = ('C', 'PF', 'SF', 'SG', 'PG')
 FILE_IDS = ('Totals', 'Averages', 'Advanced_Stats')
 DROP_COLS = ([1], [0, 1, 2, 3], [0, 1, 2])
@@ -16,3 +16,11 @@ HEADER = [
     "Ast Perc","TOV Perc","Stl Perc","Blk Perc","Usage Rate Perc","Pure Point Rtg","Points Per Shot","Off Rtg","Def Rtg",
     "Efficiency Diff","Floor Impact Counter","Player Efficiency Rating", "Position", "Year"
 ]
+ROOT_SITE = 'https://basketball.realgm.com/nba/stats'
+REQUEST_HEADER = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Referer": "https://www.google.com/",
+    "Connection": "keep-alive",
+}
