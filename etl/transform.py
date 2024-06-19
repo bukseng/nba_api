@@ -92,10 +92,3 @@ def transform():
         sep=',',
         index=False
     )
-
-
-if __name__ == "__main__":
-    try:
-        transform()
-    except Exception as e:
-        print(str(e))

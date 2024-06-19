@@ -46,7 +46,7 @@ def extract_page(year: str, position: str, stat_type: str, page_no: int):
     return extract_values(table, stat_type)
 
 
-def extract_table(year: str, position: str):
+def extract_stats(year: str, position: str):
     for stat_type in FILE_IDS:
         page_no = 1
         output = f'{DATA_PATH}{year}_{position}_{stat_type}.csv'
@@ -69,11 +69,4 @@ def extract_table(year: str, position: str):
 def extract():
     for year in YEAR_RANGE:
         for position in POSITIONS:
-            extract_table(year, position)
-
-
-if __name__ == "__main__":
-    try:
-        extract()
-    except Exception as e:
-        print(str(e))
+            extract_stats(year, position)
