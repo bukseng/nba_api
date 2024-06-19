@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from cryptography.fernet import Fernet
 import psycopg2
 import psycopg2.extras as psyext
+from psycopg2.extensions import connection
 import pandas as pd
 
 from etl_config import (
@@ -13,14 +14,14 @@ from etl_config import (
     INSERT_PG_PLAYERS
 )
 
-def decrypt_pswd():
+def decrypt_pswd() -> str:
     fern =  Fernet(os.getenv("POSTGRESQL_PSWD_KEY"))
     return fern.decrypt(
         os.getenv("POSTGRESQL_ENCR_PSWD").encode("utf-8")
     ).decode("utf-8")
 
 
-def connect_to_db():
+def connect_to_db() -> connection:
     conn = psycopg2.connect(
         database=os.getenv("POSTGRESQL_DB_NAME"),
         user=os.getenv("POSTGRESQL_USER"),
@@ -32,7 +33,7 @@ def connect_to_db():
 
 
 @contextmanager
-def use_cursor(conn):
+def use_cursor(conn: connection):
     cur = conn.cursor()
     try: 
         yield cur
@@ -40,14 +41,14 @@ def use_cursor(conn):
         cur.close()
 
 
-def load_batch(conn, df, query):
+def load_batch(conn: connection, df: pd.DataFrame, query: str):
     with use_cursor(conn) as cur:
         psyext.execute_batch(cur, query, df.values)
 
     conn.commit()
 
 
-def load_stats(conn, df):
+def load_stats(conn: connection, df: pd.DataFrame):
     stats_df = df.drop(df.columns[1], axis=1)
     stats_df.insert(
         0, 
@@ -57,14 +58,16 @@ def load_stats(conn, df):
     load_batch(conn, stats_df, INSERT_PG_STATS)
  
 
-def load_players(conn, df):
+def load_players(conn: connection, df: pd.DataFrame):
     players_df = df[['id', 'Player']].drop_duplicates()
     load_batch(conn, players_df, INSERT_PG_PLAYERS)
+
 
 if __name__ == "__main__":
     try:
         load_dotenv()
         conn = connect_to_db()
+        print(type(conn))
         df = pd.read_csv(TRANS_PATH, index_col=False)
         load_stats(conn, df)
         load_players(conn, df) 
