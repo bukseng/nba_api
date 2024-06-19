@@ -28,12 +28,25 @@ def drop_df_cols(df: pd.DataFrame, cols: List[int]) -> pd.DataFrame:
     )
 
 
+def cleanse_val(val):
+    if isinstance(val, int) or isinstance(val, float):
+        return val
+
+    if val.strip() == '-':
+        return '0'
+    
+    if ',' in val:
+        return val.replace(',', '')
+    
+    return val
+
+
 def transform_file(df: pd.DataFrame, idx: int) -> pd.DataFrame:
     for trans_proc in TRANS_PROCS[idx]:
         if trans_proc == DROP_COL_IDX:
             df = drop_df_cols(df, DROP_COLS[idx]) 
 
-    return df
+    return df.map(cleanse_val)
 
 
 def add_cols(df: pd.DataFrame, new_cols: List[pd.DataFrame]) -> pd.DataFrame:
@@ -67,26 +80,22 @@ def merge_by_position(year: int) -> pd.DataFrame:
     return pd.concat(dfs, axis=0)
 
 
-def merge_all():
+def transform():
     dfs = [
         merge_by_position(year)
         for year in YEAR_RANGE
     ]
     df = pd.concat(dfs, axis=0)
     df.to_csv(
-        f"{TRANS_PATH}transformed.csv",
+        TRANS_PATH,
         header=HEADER,
         sep=',',
         index=False
     )
 
 
-def transform():
+if __name__ == "__main__":
     try:
-        merge_all()
+        transform()
     except Exception as e:
         print(str(e))
-
-
-if __name__ == "__main__":
-    transform()
