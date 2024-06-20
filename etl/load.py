@@ -1,4 +1,3 @@
-import psycopg2
 from psycopg2.extensions import connection
 import psycopg2.extras as psyext
 import pandas as pd
