@@ -2,11 +2,11 @@ from psycopg2.extensions import connection
 import psycopg2.extras as psyext
 import pandas as pd
 
-from database.pg import (
+from api.database.pg import (
     use_cursor,
     pg_connect
 )
-from database.mongo import get_mongo_coll
+from api.database.mongo import get_mongo_coll
 
 from etl_config import (
     TRANS_PATH,
