@@ -1,13 +1,13 @@
-import os
-from contextlib import contextmanager
-
-from dotenv import load_dotenv
-from cryptography.fernet import Fernet
 import psycopg2
-import psycopg2.extras as psyext
 from psycopg2.extensions import connection
-import pymongo
+import psycopg2.extras as psyext
 import pandas as pd
+
+from database.pg import (
+    use_cursor,
+    pg_connect
+)
+from database.mongo import get_mongo_coll
 
 from etl_config import (
     TRANS_PATH,
@@ -15,37 +15,6 @@ from etl_config import (
     INSERT_PG_PLAYERS,
     HEADER_NAMES
 )
-
-
-def decrypt_pswd() -> str:
-    fern =  Fernet(os.getenv("POSTGRESQL_PSWD_KEY"))
-    return fern.decrypt(
-        os.getenv("POSTGRESQL_ENCR_PSWD").encode("utf-8")
-    ).decode("utf-8")
-
-
-@contextmanager
-def connect_to_db():
-    conn = psycopg2.connect(
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("POSTGRESQL_USER"),
-        password=decrypt_pswd(),
-        host=os.getenv("POSTGRESQL_HOST"),
-        port=os.getenv("POSTGRESQL_PORT")
-    )
-    try:
-        yield conn
-    finally:
-        conn.close()
-
-
-@contextmanager
-def use_cursor(conn: connection):
-    cur = conn.cursor()
-    try: 
-        yield cur
-    finally:
-        cur.close()
 
 
 def load_batch(conn: connection, df: pd.DataFrame, query: str):
@@ -75,23 +44,16 @@ def load_players(conn: connection, df: pd.DataFrame):
     load_batch(conn, players_df, INSERT_PG_PLAYERS)
 
 
-def get_mongo_stats_coll() -> pymongo.collection.Collection:
-    return pymongo.MongoClient(
-        os.getenv("MONGODB_URI")
-    )[os.getenv("DB_NAME")]["stats"]
-
-
 def mongo_load(df: pd.DataFrame):
-    stats_coll = get_mongo_stats_coll()
+    stats_coll = get_mongo_coll()
     mongo_df =  insert_id(df)
     stats_coll.insert_many(mongo_df.to_dict(orient="records"))
 
 
 def load():
-    load_dotenv()
     df = pd.read_csv(TRANS_PATH, index_col=False)
     df.rename(columns=lambda x: HEADER_NAMES[x], inplace=True)
-    with connect_to_db() as conn:
+    with pg_connect() as conn:
         load_stats(conn, df)
         load_players(conn, df)
 

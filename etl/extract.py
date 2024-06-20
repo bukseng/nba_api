@@ -14,7 +14,8 @@ from etl_config import (
     YEAR_RANGE, 
     FILE_IDS,
     ROOT_SITE,
-    REQUEST_HEADER
+    REQUEST_HEADER,
+    SLEEP_TIME
 )
 
 
@@ -55,12 +56,12 @@ def extract_stats(year: str, position: str):
         while True:
             data = extract_page(year, position, stat_type, page_no)
             if not data:
-                time.sleep(2)
+                time.sleep(SLEEP_TIME)
                 break
 
             all_data += data
 
-            time.sleep(5)
+            time.sleep(SLEEP_TIME)
             page_no += 1
 
         pd.DataFrame(all_data).to_csv(output, header=False, index=False)
