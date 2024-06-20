@@ -45,7 +45,7 @@ def load_players(conn: connection, df: pd.DataFrame):
 
 
 def mongo_load(df: pd.DataFrame):
-    stats_coll = get_mongo_coll()
+    stats_coll = get_mongo_coll("stats")
     mongo_df =  insert_id(df)
     stats_coll.insert_many(mongo_df.to_dict(orient="records"))
 

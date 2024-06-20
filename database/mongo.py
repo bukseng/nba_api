@@ -13,5 +13,5 @@ def get_mongo_db() -> pymongo.database.Database:
     return get_mongo_client()[os.getenv("DB_NAME")]
 
 
-def get_mongo_coll() -> pymongo.collection.Collection:
-    return get_mongo_db()["stats"]
+def get_mongo_coll(coll_name: str) -> pymongo.collection.Collection:
+    return get_mongo_db()[coll_name]
