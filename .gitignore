@@ -7,3 +7,4 @@ archived/*
 test.py
 sample.csv
 others/*
+**/migrations/*

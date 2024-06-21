@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
-from .models import Stats
+from .models import Stat
 
-class StatsSerializer(serializers.ModelSerializer):
+
+class StatSerializer(serializers.ModelSerializer):
+    player_name = serializers.CharField(source="player.name")
     class Meta:
-        model = Stats
-        fields = ["id", "player_id", "year"]
+        model = Stat
+        fields = ["id", "player_name", "year"]
     
